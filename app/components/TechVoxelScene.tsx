@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
+import { useIntersectionObserver } from "@/app/hooks/useIntersectionObserver";
 
 interface Skill {
   name: string;
@@ -15,6 +16,8 @@ interface TechVoxelSceneProps {
 
 export default function TechVoxelScene({ skills }: TechVoxelSceneProps) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const observer = useIntersectionObserver(mountRef, { threshold: 0.1 });
+  const isVisible = !!observer?.isIntersecting;
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -28,7 +31,7 @@ export default function TechVoxelScene({ skills }: TechVoxelSceneProps) {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(W, H);
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     mount.appendChild(renderer.domElement);
 
     /* ── Scene / Isometric Camera ─────────────────────────────────── */
@@ -57,8 +60,8 @@ export default function TechVoxelScene({ skills }: TechVoxelSceneProps) {
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
     dirLight.position.set(5, 10, 7.5);
     dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 1024;
-    dirLight.shadow.mapSize.height = 1024;
+    dirLight.shadow.mapSize.width = 512; // Optimized from 1024
+    dirLight.shadow.mapSize.height = 512;
     scene.add(dirLight);
 
     // Cyan point lights for glow
@@ -175,11 +178,16 @@ export default function TechVoxelScene({ skills }: TechVoxelSceneProps) {
 
     /* ── Animation Loop ───────────────────────────────────────────── */
     let raf: number;
-    const clock = new THREE.Clock();
+    let startTime = performance.now();
 
     const animate = () => {
+      if (!isVisible) {
+        if (raf) cancelAnimationFrame(raf);
+        return;
+      }
+      
       raf = requestAnimationFrame(animate);
-      const elapsed = clock.getElapsedTime();
+      const elapsed = (performance.now() - startTime) / 1000;
 
       // Smooth camera drift
       camera.position.x += (20 + mouseX * 5 - camera.position.x) * 0.05;
@@ -206,7 +214,8 @@ export default function TechVoxelScene({ skills }: TechVoxelSceneProps) {
 
       renderer.render(scene, camera);
     };
-    animate();
+    
+    if (isVisible) animate();
 
     /* ── Resize Handler ───────────────────────────────────────────── */
     const handleResize = () => {
@@ -226,15 +235,32 @@ export default function TechVoxelScene({ skills }: TechVoxelSceneProps) {
 
     /* ── Cleanup ──────────────────────────────────────────────────── */
     return () => {
-      cancelAnimationFrame(raf);
+      if (raf) cancelAnimationFrame(raf);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      
+      // Thorough disposal
+      scene.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.geometry.dispose();
+          if (Array.isArray(object.material)) {
+            object.material.forEach(m => {
+              if (m.map) m.map.dispose();
+              m.dispose();
+            });
+          } else {
+            if (object.material.map) object.material.map.dispose();
+            object.material.dispose();
+          }
+        }
+      });
+
       renderer.dispose();
       if (mount.contains(renderer.domElement)) {
         mount.removeChild(renderer.domElement);
       }
     };
-  }, [skills]);
+  }, [skills, isVisible]);
 
   return (
     <div 

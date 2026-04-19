@@ -1,12 +1,17 @@
+"use client";
+
+import dynamic from "next/dynamic";
 import NavBar          from "./components/NavBar";
 import HeroSection     from "./components/HeroSection";
-import AboutSection    from "./components/AboutSection";
-import TechSection     from "./components/TechSection";
-import CertificationsSection from "./components/CertificationsSection";
-import ProjectsSection from "./components/ProjectsSection";
-import ContactSection  from "./components/ContactSection";
-import AnimatedFooter from "@/components/ui/animated-footer";
 import { PixelCursorTrail } from "@/components/ui/pixel-trail";
+
+const AboutSection = dynamic(() => import("./components/AboutSection"), { ssr: false });
+const JourneySection = dynamic(() => import("./components/JourneySection"), { ssr: false });
+const TechSection = dynamic(() => import("./components/TechSection"), { ssr: false });
+const CertificationsSection = dynamic(() => import("./components/CertificationsSection"), { ssr: false });
+const ProjectsSection = dynamic(() => import("./components/ProjectsSection"), { ssr: false });
+const ContactSection = dynamic(() => import("./components/ContactSection"), { ssr: false });
+const AnimatedFooter = dynamic(() => import("@/components/ui/animated-footer"), { ssr: false });
 
 export default function Home() {
   return (
@@ -16,6 +21,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <AboutSection />
+        <JourneySection />
         <TechSection />
         <CertificationsSection />
         <ProjectsSection />

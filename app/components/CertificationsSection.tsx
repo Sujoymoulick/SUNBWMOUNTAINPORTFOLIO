@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic";
 
-// WebGL components must be loaded client-side
 const CircularGallery = dynamic(() => import("./CircularGallery"), { ssr: false });
 const Galaxy = dynamic(() => import("@/components/ui/galaxy"), { ssr: false });
 

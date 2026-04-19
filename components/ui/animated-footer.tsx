@@ -98,7 +98,6 @@ const Footer: React.FC<FooterProps> = ({
               style={{
                 height: `${index + 1}px`,
                 backgroundColor: "rgb(255, 255, 255)",
-                transition: "transform 0.1s ease",
                 willChange: "transform",
                 marginTop: "-2px",
               }}

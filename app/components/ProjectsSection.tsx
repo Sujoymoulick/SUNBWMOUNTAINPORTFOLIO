@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import Stack from "./Stack";
 import Galaxy from "@/components/ui/galaxy";
 
@@ -62,6 +62,191 @@ export default function ProjectsSection() {
     if (headerRef.current) io.observe(headerRef.current);
     return () => io.disconnect();
   }, []);
+
+  const projectCards = useMemo(() => PROJECTS.map((p) => (
+    <div
+      key={p.id}
+      style={{
+        height: "100%",
+        width: "100%",
+        background: p.bg,
+        borderRadius: "32px",
+        border: `1px solid ${p.accent}33`,
+        display: "flex",
+        gap: "2.5rem",
+        alignItems: "stretch",
+        overflow: "hidden",
+        position: "relative",
+        boxShadow: `0 40px 100px -20px ${p.accent}15, 0 20px 50px -10px rgba(0,0,0,0.5)`,
+      }}
+    >
+      {/* Left accent bar */}
+      <div
+        style={{
+          width: "6px",
+          flexShrink: 0,
+          background: `linear-gradient(180deg, ${p.accent}, transparent)`,
+          borderRadius: "6px 0 0 6px",
+        }}
+      />
+
+      {/* Content */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          padding: "2.5rem 2.5rem 2.5rem 0",
+        }}
+      >
+        <div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: "1.25rem",
+            }}
+          >
+            <div>
+              <p
+                className="label-tech"
+                style={{ color: p.accent, marginBottom: "0.4rem" }}
+              >
+                {p.index} // {p.tagline}
+              </p>
+              <h3
+                style={{
+                  fontSize: "1.8rem",
+                  fontWeight: 900,
+                  color: "var(--on-surface)",
+                  letterSpacing: "-0.02em",
+                }}
+              >
+                {p.title}
+              </h3>
+            </div>
+            <div
+              style={{
+                width: "48px",
+                height: "48px",
+                borderRadius: "12px",
+                background: `${p.accent}15`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: p.accent,
+                fontSize: "1.2rem",
+                border: `1px solid ${p.accent}33`,
+              }}
+            >
+              ↗
+            </div>
+          </div>
+          <p
+            style={{
+              fontSize: "0.95rem",
+              lineHeight: 1.8,
+              color: "var(--on-surface-variant)",
+              maxWidth: "520px",
+            }}
+          >
+            {p.desc}
+          </p>
+        </div>
+
+        {/* Bottom row */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: "1.5rem",
+            marginTop: "2rem",
+          }}
+        >
+          {/* Tags */}
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+            {p.tags.map((t) => (
+              <span
+                key={t}
+                style={{
+                  padding: "0.25rem 0.85rem",
+                  borderRadius: "var(--radius-full)",
+                  fontSize: "0.7rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.04em",
+                  background: `${p.accent}12`,
+                  color: p.accent,
+                  border: `1px solid ${p.accent}25`,
+                }}
+              >
+                {t}
+              </span>
+            ))}
+          </div>
+
+          {/* Interaction Hint */}
+          <p 
+            style={{ 
+              fontSize: "0.65rem", 
+              color: "var(--on-surface-variant)", 
+              opacity: 0.4,
+              textTransform: "uppercase",
+              letterSpacing: "0.15em",
+              fontWeight: 600
+            }}
+          >
+            Drag to flip
+          </p>
+
+          {/* Links */}
+          <div style={{ display: "flex", gap: "1.5rem" }}>
+            {[
+              { label: "Live ↗", href: p.links.live },
+              { label: "Code ↗", href: p.links.code },
+            ].map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  fontSize: "0.8rem",
+                  fontWeight: 700,
+                  letterSpacing: "0.05em",
+                  color: p.accent,
+                  borderBottom: `2px solid ${p.accent}33`,
+                  paddingBottom: "2px",
+                  transition: "all 0.2s",
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.borderBottomColor = p.accent}
+                onMouseLeave={(e) => e.currentTarget.style.borderBottomColor = `${p.accent}33`}
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Decorative orb */}
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          bottom: "-60px",
+          right: "-60px",
+          width: "240px",
+          height: "240px",
+          borderRadius: "50%",
+          background: `radial-gradient(circle, ${p.accent}25, transparent 70%)`,
+          pointerEvents: "none",
+        }}
+      />
+    </div>
+  )), []);
 
   return (
     <section
@@ -178,192 +363,10 @@ export default function ProjectsSection() {
           sensitivity={160}
           sendToBackOnClick={true}
           animationConfig={{ stiffness: 280, damping: 18 }}
-          cards={PROJECTS.map((p) => (
-            <div
-              key={p.id}
-              style={{
-                height: "100%",
-                width: "100%",
-                background: p.bg,
-                borderRadius: "32px",
-                border: `1px solid ${p.accent}33`,
-                display: "flex",
-                gap: "2.5rem",
-                alignItems: "stretch",
-                overflow: "hidden",
-                position: "relative",
-                boxShadow: `0 40px 100px -20px ${p.accent}15, 0 20px 50px -10px rgba(0,0,0,0.5)`,
-              }}
-            >
-              {/* Left accent bar */}
-              <div
-                style={{
-                  width: "6px",
-                  flexShrink: 0,
-                  background: `linear-gradient(180deg, ${p.accent}, transparent)`,
-                  borderRadius: "6px 0 0 6px",
-                }}
-              />
-
-              {/* Content */}
-              <div
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  padding: "2.5rem 2.5rem 2.5rem 0",
-                }}
-              >
-                <div>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "flex-start",
-                      marginBottom: "1.25rem",
-                    }}
-                  >
-                    <div>
-                      <p
-                        className="label-tech"
-                        style={{ color: p.accent, marginBottom: "0.4rem" }}
-                      >
-                        {p.index} // {p.tagline}
-                      </p>
-                      <h3
-                        style={{
-                          fontSize: "1.8rem",
-                          fontWeight: 900,
-                          color: "var(--on-surface)",
-                          letterSpacing: "-0.02em",
-                        }}
-                      >
-                        {p.title}
-                      </h3>
-                    </div>
-                    <div
-                      style={{
-                        width: "48px",
-                        height: "48px",
-                        borderRadius: "12px",
-                        background: `${p.accent}15`,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: p.accent,
-                        fontSize: "1.2rem",
-                        border: `1px solid ${p.accent}33`,
-                      }}
-                    >
-                      ↗
-                    </div>
-                  </div>
-                  <p
-                    style={{
-                      fontSize: "0.95rem",
-                      lineHeight: 1.8,
-                      color: "var(--on-surface-variant)",
-                      maxWidth: "520px",
-                    }}
-                  >
-                    {p.desc}
-                  </p>
-                </div>
-
-                {/* Bottom row */}
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    flexWrap: "wrap",
-                    gap: "1.5rem",
-                    marginTop: "2rem",
-                  }}
-                >
-                  {/* Tags */}
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-                    {p.tags.map((t) => (
-                      <span
-                        key={t}
-                        style={{
-                          padding: "0.25rem 0.85rem",
-                          borderRadius: "var(--radius-full)",
-                          fontSize: "0.7rem",
-                          fontWeight: 700,
-                          letterSpacing: "0.04em",
-                          background: `${p.accent}12`,
-                          color: p.accent,
-                          border: `1px solid ${p.accent}25`,
-                        }}
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Interaction Hint */}
-                  <p 
-                    style={{ 
-                      fontSize: "0.65rem", 
-                      color: "var(--on-surface-variant)", 
-                      opacity: 0.4,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.15em",
-                      fontWeight: 600
-                    }}
-                  >
-                    Drag to flip
-                  </p>
-
-                  {/* Links */}
-                  <div style={{ display: "flex", gap: "1.5rem" }}>
-                    {[
-                      { label: "Live ↗", href: p.links.live },
-                      { label: "Code ↗", href: p.links.code },
-                    ].map((link) => (
-                      <a
-                        key={link.label}
-                        href={link.href}
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                          fontSize: "0.8rem",
-                          fontWeight: 700,
-                          letterSpacing: "0.05em",
-                          color: p.accent,
-                          borderBottom: `2px solid ${p.accent}33`,
-                          paddingBottom: "2px",
-                          transition: "all 0.2s",
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.borderBottomColor = p.accent}
-                        onMouseLeave={(e) => e.currentTarget.style.borderBottomColor = `${p.accent}33`}
-                      >
-                        {link.label}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Decorative orb */}
-              <div
-                aria-hidden
-                style={{
-                  position: "absolute",
-                  bottom: "-60px",
-                  right: "-60px",
-                  width: "240px",
-                  height: "240px",
-                  borderRadius: "50%",
-                  background: `radial-gradient(circle, ${p.accent}25, transparent 70%)`,
-                  pointerEvents: "none",
-                }}
-              />
-            </div>
-          ))}
+          cards={projectCards}
         />
       </div>
+
       
       {/* ── Explore More CTA ────────────────────── */}
       <div 

@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { useIntersectionObserver } from "@/app/hooks/useIntersectionObserver";
 import "./horizon.css";
 
 if (typeof window !== "undefined") {
@@ -39,6 +40,7 @@ export const Component = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [currentSection, setCurrentSection] = useState(0);
   const [isReady, setIsReady] = useState(false);
+  const titleRef = useRef<HTMLHeadingElement>(null);
   const totalSections = 2;
 
   const threeRefs = useRef<ThreeRefs>({
@@ -52,6 +54,10 @@ export const Component = () => {
     animationId: null,
     locations: [],
   });
+
+  const observer = useIntersectionObserver(containerRef, { threshold: 0.1 });
+  const isVisible = !!observer?.isIntersecting;
+  const scrollYRef = useRef(0);
 
   // Initialize Three.js
   useEffect(() => {
@@ -351,15 +357,40 @@ export const Component = () => {
 
     const animate = () => {
       const refs = threeRefs.current;
+      if (!refs.scene || !refs.camera) return;
+      
       refs.animationId = requestAnimationFrame(animate);
 
       const time = Date.now() * 0.001;
+      const scrollY = scrollYRef.current;
+      
+      // Throttled Scroll logic moved here for performance
+      const windowHeight = window.innerHeight;
+      const documentHeight = document.documentElement.scrollHeight;
+      const maxScroll = documentHeight - windowHeight;
+      const progress = Math.min(Math.max(maxScroll > 0 ? scrollY / maxScroll : 0, 0), 1);
+      
+      const totalProgress = progress * totalSections;
+      const sectionProgress = totalProgress % 1;
+      const newSection = Math.floor(totalProgress);
+
+      const cameraPositions = [
+        { x: 0, y: 30, z: 300 }, // Section 0 - HORIZON
+        { x: 0, y: 40, z: -50 }, // Section 1 - COSMOS
+        { x: 0, y: 50, z: -700 }, // Section 2 - INFINITY
+      ];
+
+      const currentPos = cameraPositions[newSection] || cameraPositions[0];
+      const nextPos = cameraPositions[newSection + 1] || currentPos;
+
+      refs.targetCameraX = currentPos.x + (nextPos.x - currentPos.x) * sectionProgress;
+      refs.targetCameraY = currentPos.y + (nextPos.y - currentPos.y) * sectionProgress;
+      refs.targetCameraZ = currentPos.z + (nextPos.z - currentPos.z) * sectionProgress;
 
       // Update stars
       refs.stars.forEach((starField) => {
         if ((starField.material as THREE.ShaderMaterial).uniforms) {
-          (starField.material as THREE.ShaderMaterial).uniforms.time.value =
-            time;
+          (starField.material as THREE.ShaderMaterial).uniforms.time.value = time;
         }
       });
 
@@ -369,30 +400,30 @@ export const Component = () => {
       }
 
       // Smooth camera movement with easing
-      if (refs.camera && refs.targetCameraX !== undefined) {
-        const smoothingFactor = 0.05; // Lower = smoother but slower
+      const smoothingFactor = 0.05; 
+      smoothCameraPos.current.x += (refs.targetCameraX - smoothCameraPos.current.x) * smoothingFactor;
+      smoothCameraPos.current.y += (refs.targetCameraY! - smoothCameraPos.current.y) * smoothingFactor;
+      smoothCameraPos.current.z += (refs.targetCameraZ! - smoothCameraPos.current.z) * smoothingFactor;
 
-        // Calculate smooth position with easing
-        smoothCameraPos.current.x +=
-          (refs.targetCameraX - smoothCameraPos.current.x) * smoothingFactor;
-        smoothCameraPos.current.y +=
-          (refs.targetCameraY! - smoothCameraPos.current.y) * smoothingFactor;
-        smoothCameraPos.current.z +=
-          (refs.targetCameraZ! - smoothCameraPos.current.z) * smoothingFactor;
+      const floatX = Math.sin(time * 0.1) * 2;
+      const floatY = Math.cos(time * 0.15) * 1;
 
-        // Add subtle floating motion
-        const floatX = Math.sin(time * 0.1) * 2;
-        const floatY = Math.cos(time * 0.15) * 1;
+      refs.camera.position.x = smoothCameraPos.current.x + floatX;
+      refs.camera.position.y = smoothCameraPos.current.y + floatY;
+      refs.camera.position.z = smoothCameraPos.current.z;
+      refs.camera.lookAt(0, 10, -600);
 
-        // Apply final position
-        refs.camera.position.x = smoothCameraPos.current.x + floatX;
-        refs.camera.position.y = smoothCameraPos.current.y + floatY;
-        refs.camera.position.z = smoothCameraPos.current.z;
-        refs.camera.lookAt(0, 10, -600);
-      }
-
-      // Parallax mountains with subtle animation
+      // Parallax mountains
       refs.mountains.forEach((mountain, i) => {
+        const speed = 1 + i * 0.9;
+        const targetZ = mountain.userData.baseZ + scrollY * speed * 0.5;
+        
+        if (progress > 0.7) {
+          mountain.position.z = 600000;
+        } else if (refs.locations?.[i] !== undefined) {
+          mountain.position.z = targetZ; // Apply parallax
+        }
+
         const parallaxFactor = 1 + i * 0.5;
         mountain.position.x = Math.sin(time * 0.1) * 2 * parallaxFactor;
         mountain.position.y = 50 + Math.cos(time * 0.15) * 1 * parallaxFactor;
@@ -402,6 +433,17 @@ export const Component = () => {
         refs.composer.render();
       }
     };
+
+    const runAnimation = () => {
+      if (isVisible) {
+        animate();
+      } else if (threeRefs.current.animationId) {
+        cancelAnimationFrame(threeRefs.current.animationId);
+        threeRefs.current.animationId = null;
+      }
+    };
+
+    runAnimation();
 
     initThree();
 
@@ -447,13 +489,20 @@ export const Component = () => {
         refs.nebula = null;
       }
 
+      if (refs.composer) {
+        refs.composer.passes.forEach(pass => {
+          if ((pass as any).dispose) (pass as any).dispose();
+        });
+        refs.composer = null;
+      }
+
       if (refs.renderer) {
         refs.renderer.dispose();
       }
       
       refs.scene = null;
     };
-  }, []);
+  }, [isVisible]);
 
   const getLocation = () => {
     const refs = threeRefs.current;
@@ -513,74 +562,44 @@ export const Component = () => {
   // Scroll handling
   useEffect(() => {
     const handleScroll = () => {
-      const scrollY = window.scrollY;
+      scrollYRef.current = window.scrollY;
+      
       const windowHeight = window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
       const maxScroll = documentHeight - windowHeight;
 
-      // Protection against division by zero on very short pages
-      const rawProgress = maxScroll > 0 ? scrollY / maxScroll : 0;
+      const rawProgress = maxScroll > 0 ? scrollYRef.current / maxScroll : 0;
       const progress = Math.min(Math.max(rawProgress, 0), 1);
 
       setScrollProgress(progress);
       const newSection = Math.floor(progress * totalSections);
       setCurrentSection(newSection);
-
-      const refs = threeRefs.current;
-      if (!refs.scene) return;
-
-      // Calculate smooth progress through all sections
-      const totalProgress = progress * totalSections;
-      const sectionProgress = totalProgress % 1;
-
-      // Define camera positions for each section
-      const cameraPositions = [
-        { x: 0, y: 30, z: 300 }, // Section 0 - HORIZON
-        { x: 0, y: 40, z: -50 }, // Section 1 - COSMOS
-        { x: 0, y: 50, z: -700 }, // Section 2 - INFINITY
-      ];
-
-      // Get current and next positions
-      const currentPos = cameraPositions[newSection] || cameraPositions[0];
-      const nextPos = cameraPositions[newSection + 1] || currentPos;
-
-      // Set target positions (actual smoothing happens in animate loop)
-      refs.targetCameraX =
-        currentPos.x + (nextPos.x - currentPos.x) * sectionProgress;
-      refs.targetCameraY =
-        currentPos.y + (nextPos.y - currentPos.y) * sectionProgress;
-      refs.targetCameraZ =
-        currentPos.z + (nextPos.z - currentPos.z) * sectionProgress;
-
-      // Smooth parallax for mountains
-      refs.mountains.forEach((mountain, i) => {
-        const speed = 1 + i * 0.9;
-        const targetZ = mountain.userData.baseZ + scrollY * speed * 0.5;
-        
-        if (refs.nebula) {
-          refs.nebula.position.z = targetZ + progress * speed * 0.01 - 100;
-        }
-
-        // Use the same smoothing approach
-        mountain.userData.targetZ = targetZ;
-        if (progress > 0.7) {
-          mountain.position.z = 600000;
-        }
-        if (progress < 0.7 && refs.locations?.[i] !== undefined) {
-          mountain.position.z = refs.locations[i];
-        }
-      });
-      
-      if (refs.nebula && refs.mountains.length > 3) {
-        refs.nebula.position.z = refs.mountains[3].position.z;
-      }
     };
 
-    window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Set initial position
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [totalSections]);
+
+  // Handle Hero Title animation based on scroll progress
+  useEffect(() => {
+    if (!isReady || !titleRef.current) return;
+
+    // We want the title to be most prominent at scroll=0
+    // and fade out as we move toward section 1 (progress 0.5)
+    const progressLimit = 0.5;
+    const fadeProgress = Math.min(scrollProgress / progressLimit, 1);
+    
+    gsap.to(titleRef.current, {
+      opacity: 1 - fadeProgress,
+      scale: 1 + fadeProgress * 0.5,
+      y: -fadeProgress * 100,
+      filter: `blur(${fadeProgress * 10}px)`,
+      duration: 0.1,
+      ease: "none"
+    });
+  }, [scrollProgress, isReady]);
 
   const splitTitle = (text: string) => {
     return text.split("").map((char, i) => (
@@ -593,6 +612,26 @@ export const Component = () => {
   return (
     <div ref={containerRef} className="hero-container cosmos-style">
       <canvas ref={canvasRef} className="hero-canvas" />
+
+      {/* Main Hero Reveal Name */}
+      <div className="hero-content" style={{ zIndex: 10, width: "100%", padding: "0 2rem" }}>
+        <h1 
+          ref={titleRef}
+          className="hero-title"
+          style={{ 
+            opacity: 0, 
+            transform: "translateY(20px)",
+            textAlign: "center",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: "0.2em 0.5em"
+          }}
+        >
+          <span style={{ whiteSpace: "nowrap" }}>{splitTitle("SUJOY")}</span>
+          <span style={{ whiteSpace: "nowrap" }}>{splitTitle("MOULICK")}</span>
+        </h1>
+      </div>
 
       {/* Side menu - strictly hidden on small devices */}
       <div 

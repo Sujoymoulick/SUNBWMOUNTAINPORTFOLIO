@@ -128,7 +128,10 @@ export default function Stack({
       onMouseLeave={() => pauseOnHover && setIsPaused(false)}
     >
       {stack.map((card, index) => {
-        const randomRotate = randomRotation ? Math.random() * 10 - 5 : 0;
+        // Use card.id to create a deterministic random-like rotation
+        // This prevents jitter on re-renders while still looking "random"
+        const seed = card.id * 123.456;
+        const randomRotate = randomRotation ? (Math.sin(seed) * 10) : 0;
         return (
           <CardRotate
             key={card.id}

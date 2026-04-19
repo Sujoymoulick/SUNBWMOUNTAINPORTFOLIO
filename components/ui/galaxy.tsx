@@ -2,6 +2,7 @@
 
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
+import { useIntersectionObserver } from "@/app/hooks/useIntersectionObserver";
 import './Galaxy.css';
 
 const vertexShader = `
@@ -219,6 +220,8 @@ export default function Galaxy({
   const smoothMousePos = useRef({ x: 0.5, y: 0.5 });
   const targetMouseActive = useRef(0.0);
   const smoothMouseActive = useRef(0.0);
+  const observer = useIntersectionObserver(ctnDom, { threshold: 0.1 });
+  const isVisible = !!observer?.isIntersecting;
 
   useEffect(() => {
     if (!ctnDom.current) return;
@@ -288,6 +291,11 @@ export default function Galaxy({
     let animateId: number;
 
     function update(t: number) {
+      if (!isVisible) {
+        animateId = requestAnimationFrame(update);
+        return;
+      }
+
       animateId = requestAnimationFrame(update);
       if (!disableAnimation && program) {
         program.uniforms.uTime.value = t * 0.001;
@@ -342,8 +350,10 @@ export default function Galaxy({
       gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, [
-    focal,
-    rotation,
+    focal[0],
+    focal[1],
+    rotation[0],
+    rotation[1],
     starSpeed,
     density,
     hueShift,
@@ -359,6 +369,7 @@ export default function Galaxy({
     autoCenterRepulsion,
     transparent
   ]);
+
 
   return <div ref={ctnDom} className={`galaxy-container ${className}`} style={{ width: '100%', height: '100%', position: 'relative', ...style }} {...rest} />;
 }

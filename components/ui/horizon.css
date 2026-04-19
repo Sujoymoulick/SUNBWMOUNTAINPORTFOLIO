@@ -31,13 +31,16 @@
 }
 
 .hero-title {
-  font-size: clamp(3rem, 10vw, 8rem);
+  font-size: clamp(2.5rem, 9vw, 6.5rem);
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.15em;
   margin: 0;
-  background: linear-gradient(180deg, #ffffff 0%, rgba(255,255,255,0.4) 100%);
+  line-height: 1.1;
+  background: linear-gradient(180deg, #ffffff 20%, #909090 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 15px 35px rgba(0,0,0,0.6));
 }
 
 .title-char {
@@ -45,10 +48,11 @@
 }
 
 .hero-subtitle {
-  margin-top: 2rem;
-  font-size: clamp(1rem, 2vw, 1.5rem);
-  font-weight: 300;
-  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1.5rem;
+  font-size: clamp(0.75rem, 1.5vw, 1.2rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.4em;
   line-height: 1.6;
 }
 

@@ -174,15 +174,18 @@ export default function HeroCanvas() {
     };
     window.addEventListener("mousemove", onMouseMove);
 
-    /* ── Clock + render loop ─────────────────────────────────────── */
-    const clock = new THREE.Clock();
+    /* ── Animation Loop ─────────────────────────────────────── */
+    let lastTime = performance.now();
+    let startTime = performance.now();
     let raf: number;
 
     const animate = () => {
       raf = requestAnimationFrame(animate);
 
-      const delta = clock.getDelta();
-      const elapsed = clock.getElapsedTime();
+      const currentTime = performance.now();
+      const delta = (currentTime - lastTime) / 1000;
+      const elapsed = (currentTime - startTime) / 1000;
+      lastTime = currentTime;
 
       // Drive the AnimationMixer
       mixer.update(delta);
