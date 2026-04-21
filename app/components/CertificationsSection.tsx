@@ -32,7 +32,8 @@ export default function CertificationsSection() {
         background: "var(--surface)",
         paddingTop: "6rem",
         paddingBottom: "6rem",
-        overflow: "hidden"
+        overflow: "hidden",
+        zIndex: 10,
       }}
     >
       {/* Dynamic Galaxy Background */}

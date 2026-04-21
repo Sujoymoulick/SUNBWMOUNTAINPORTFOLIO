@@ -65,6 +65,7 @@ export default function TechSection() {
         background: "var(--surface)",
         position: "relative",
         overflow: "hidden",
+        zIndex: 10,
       }}
     >
       {/* Background Galaxy */}
@@ -136,9 +137,8 @@ export default function TechSection() {
           zIndex: 20,
         }}
       >
-        {/* Header */}
         <div
-          className="fade-up"
+          className="fade-up text-center lg:text-left mx-auto lg:mx-0"
           style={{ maxWidth: "620px", marginBottom: "4rem" }}
         >
           <p
@@ -163,11 +163,8 @@ export default function TechSection() {
 
         {/* Category filter */}
         <div
-          className="fade-up"
+          className="fade-up flex justify-center lg:justify-start gap-2 flex-wrap mb-4"
           style={{
-            display: "flex",
-            gap: "0.5rem",
-            flexWrap: "wrap",
             marginBottom: "1rem",
           }}
         >

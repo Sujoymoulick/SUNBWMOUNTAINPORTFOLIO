@@ -255,6 +255,7 @@ export default function ProjectsSection() {
         position: "relative",
         background: "var(--surface)",
         overflow: "hidden",
+        zIndex: 10,
       }}
     >
       {/* Background Galaxy */}

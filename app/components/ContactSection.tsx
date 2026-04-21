@@ -144,17 +144,13 @@ export default function ContactSection() {
         style={{
           maxWidth: "1100px",
           margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "6rem",
-          alignItems: "flex-start",
           position: "relative",
           zIndex: 20,
         }}
-        className="contact-grid"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24"
       >
         {/* Left */}
-        <div>
+        <div className="text-center lg:text-left">
           <div className="fade-up" style={{ marginBottom: "2rem" }}>
             <p
               className="label-tech"

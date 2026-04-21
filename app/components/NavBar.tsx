@@ -145,13 +145,14 @@ export default function NavBar() {
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen(o => !o)}
               style={{
-                width: "40px", height: "40px",
+                width: "44px", height: "44px",
                 borderRadius: "var(--radius-sm)",
                 display: "flex", flexDirection: "column",
                 alignItems: "center", justifyContent: "center",
                 gap: "5px",
-                background: menuOpen ? "rgba(0,219,233,0.12)" : "rgba(255,255,255,0.04)",
-                border: `1px solid ${menuOpen ? "rgba(0,219,233,0.4)" : "rgba(59,73,75,0.35)"}`,
+                background: menuOpen ? "rgba(0,219,233,0.2)" : "rgba(10,10,12,0.6)",
+                border: `1px solid ${menuOpen ? "rgba(0,219,233,0.5)" : "rgba(255,255,255,0.1)"}`,
+                backdropFilter: "blur(8px)",
                 transition: "all var(--transition-std)",
                 cursor: "pointer",
                 flexShrink: 0,
@@ -167,12 +168,12 @@ export default function NavBar() {
                   <line x1="13" y1="3" x2="3" y2="13" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               ) : (
-                /* 3×1 dots vertical */
-                <>
-                  {[0,1,2].map(i => (
-                    <span key={i} style={{ width: "4px", height: "4px", borderRadius: "50%", background: "var(--primary)", display: "block" }} />
-                  ))}
-                </>
+                /* Hamburger menu icon */
+                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                  <rect width="20" height="2" rx="1" fill="white" />
+                  <rect y="6" width="20" height="2" rx="1" fill="white" />
+                  <rect y="12" width="20" height="2" rx="1" fill="white" />
+                </svg>
               )}
             </button>
           </div>

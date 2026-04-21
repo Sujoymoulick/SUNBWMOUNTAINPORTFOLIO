@@ -563,18 +563,16 @@ export const Component = () => {
   // Scroll handling
   useEffect(() => {
     const handleScroll = () => {
-      scrollYRef.current = window.scrollY;
-      
+      const scrollY = window.scrollY;
+      scrollYRef.current = scrollY;
       const windowHeight = window.innerHeight;
-      const documentHeight = document.documentElement.scrollHeight;
-      const maxScroll = documentHeight - windowHeight;
-
-      const rawProgress = maxScroll > 0 ? scrollYRef.current / maxScroll : 0;
-      const progress = Math.min(Math.max(rawProgress, 0), 1);
-
+      
+      // Calculate progress based on the first screen height
+      const progress = Math.min(Math.max(scrollY / windowHeight, 0), 1);
       setScrollProgress(progress);
+      
       const newSection = Math.floor(progress * totalSections);
-      setCurrentSection(newSection);
+      setCurrentSection(Math.min(newSection, totalSections - 1));
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -585,7 +583,7 @@ export const Component = () => {
 
   // Handle Hero Title animation based on scroll progress
   useEffect(() => {
-    if (!isReady || !titleRef.current) return;
+    if (!titleRef.current) return;
 
     // We want the title to be most prominent at scroll=0
     // and fade out as we move toward section 1 (progress 0.5)
@@ -593,13 +591,34 @@ export const Component = () => {
     const fadeProgress = Math.min(scrollProgress / progressLimit, 1);
     
     gsap.to(titleRef.current, {
-      opacity: 1 - fadeProgress,
+      autoAlpha: 1 - fadeProgress,
       scale: 1 + fadeProgress * 0.5,
       y: -fadeProgress * 100,
       filter: `blur(${fadeProgress * 10}px)`,
       duration: 0.1,
       ease: "none"
     });
+
+    if (canvasRef.current) {
+      gsap.to(canvasRef.current, {
+        autoAlpha: scrollProgress >= 1 ? 0 : 1,
+        duration: 0.2,
+      });
+    }
+
+    if (menuRef.current) {
+      gsap.to(menuRef.current, {
+        autoAlpha: scrollProgress >= 0.8 ? 0 : 1,
+        duration: 0.2,
+      });
+    }
+
+    if (scrollProgressRef.current) {
+      gsap.to(scrollProgressRef.current, {
+        autoAlpha: scrollProgress >= 0.8 ? 0 : 1,
+        duration: 0.2,
+      });
+    }
   }, [scrollProgress, isReady]);
 
   const splitTitle = (text: string) => {
@@ -615,15 +634,24 @@ export const Component = () => {
       <canvas ref={canvasRef} className="hero-canvas" />
 
       {/* Main Hero Reveal Name */}
-      <div className="hero-content" style={{ zIndex: 10, width: "100%", padding: "0 2rem" }}>
+      <div className="hero-content" style={{ zIndex: 10, width: "100%" }}>
         <div
           ref={titleRef}
           style={{ opacity: 0, transform: "translateY(20px)" }}
+          className="flex flex-col sm:flex-row items-center justify-center sm:gap-6"
         >
           <AnimatedText
-            text="SUJOY MOULICK"
-            className="flex justify-center items-center py-4 md:py-8"
-            textClassName="text-[2.8rem] sm:text-[5rem] md:text-[8rem] font-bold leading-tight text-center"
+            text="SUJOY"
+            className="w-auto"
+            textClassName="text-[2.5rem] sm:text-[5rem] md:text-[8rem] font-bold leading-none sm:leading-tight text-center"
+            hoverEffect={true}
+            gradientAnimationDuration={3}
+            gradientColors="linear-gradient(90deg, #000000, #00dbe9, #000000, #00dbe9, #000000)"
+          />
+          <AnimatedText
+            text="MOULICK"
+            className="w-auto"
+            textClassName="text-[2.5rem] sm:text-[5rem] md:text-[8rem] font-bold leading-none sm:leading-tight text-center"
             hoverEffect={true}
             gradientAnimationDuration={3}
             gradientColors="linear-gradient(90deg, #000000, #00dbe9, #000000, #00dbe9, #000000)"

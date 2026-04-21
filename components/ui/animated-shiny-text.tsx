@@ -43,7 +43,7 @@ const AnimatedText = React.forwardRef<HTMLDivElement, AnimatedTextProps>(
     return (
       <div
         ref={ref}
-        className={cn("flex justify-center items-center py-8", className)}
+        className={cn("flex justify-center items-center", className)}
         {...props}
       >
         <motion.h1

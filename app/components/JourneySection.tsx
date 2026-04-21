@@ -400,7 +400,7 @@ const timelineData: TimelineItem[] = [
 
 export default function JourneySection() {
   return (
-    <section id="journey" className="relative min-h-screen bg-black text-white selection:bg-white selection:text-black py-20 md:py-32 w-full flex flex-col items-center">
+    <section id="journey" className="relative z-10 min-h-screen bg-black text-white selection:bg-white selection:text-black py-20 md:py-32 w-full flex flex-col items-center">
       {/* Background Ambience */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-500/5 blur-[120px] rounded-full"></div>

@@ -28,7 +28,7 @@ export default function TechVoxelScene({ skills }: TechVoxelSceneProps) {
 
     /* ── Renderer ─────────────────────────────────────────────────── */
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(W, H);
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;

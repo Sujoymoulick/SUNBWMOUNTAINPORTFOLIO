@@ -32,10 +32,12 @@ export default function AboutSection() {
       ref={ref}
       style={{
         padding: "10rem 2rem",
-        background:
-          "linear-gradient(180deg, var(--surface) 0%, var(--surface-container-low) 100%)",
+        background: "#000000",
         position: "relative",
         overflow: "hidden",
+        zIndex: 10,
+        width: "100%",
+        display: "block",
       }}
     >
       {/* Background Galaxy */}
@@ -86,14 +88,10 @@ export default function AboutSection() {
         style={{
           maxWidth: "1200px",
           margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "6rem",
-          alignItems: "center",
           position: "relative",
           zIndex: 20,
         }}
-        className="about-grid"
+        className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24"
       >
         {/* Left — code card */}
         <div className="fade-up">
