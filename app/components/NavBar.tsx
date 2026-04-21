@@ -98,11 +98,12 @@ export default function NavBar() {
         }}
       >
         <nav
+          className="px-4 md:px-8"
           style={{
             maxWidth: "1200px", margin: "0 auto",
-            padding: "0 2rem", height: "68px",
+            height: "68px",
             display: "flex", alignItems: "center", justifyContent: "space-between",
-            gap: "2rem",
+            width: "100%",
           }}
         >
           {/* Logo */}
