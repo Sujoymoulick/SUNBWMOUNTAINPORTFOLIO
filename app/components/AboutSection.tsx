@@ -299,6 +299,9 @@ export default function AboutSection() {
       </div>
 
       <style>{`
+        @media (max-width: 1024px) {
+          .about-grid { gap: 4rem !important; }
+        }
         @media (max-width: 768px) {
           .about-grid { grid-template-columns: 1fr !important; gap: 3rem !important; }
         }

@@ -87,6 +87,7 @@ export function Footer() {
 										<li key={link.title}>
 											<a
 												href={link.href}
+												download={link.title === 'Download CV' ? true : undefined}
 												className="hover:text-white inline-flex items-center transition-all duration-300"
 											>
 												{link.icon && <link.icon className="me-2 size-4" />}

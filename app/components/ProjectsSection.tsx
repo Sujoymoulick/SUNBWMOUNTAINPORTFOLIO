@@ -426,7 +426,10 @@ export default function ProjectsSection() {
           .stack-container { width: 42rem !important; height: 32rem !important; }
         }
         @media (max-width: 768px) {
-          .stack-container { width: 90vw !important; height: 32rem !important; }
+          .stack-container { width: 95vw !important; height: 36rem !important; }
+        }
+        @media (max-width: 480px) {
+          .stack-container { height: 38rem !important; }
         }
       `}</style>
     </section>

@@ -5,6 +5,8 @@ import Galaxy from "@/components/ui/galaxy";
 export default function ContactSection() {
   const ref = useRef<HTMLElement>(null);
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState("");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
 
   useEffect(() => {
@@ -27,9 +29,33 @@ export default function ContactSection() {
     return () => io.disconnect();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSent(true);
+    setLoading(true);
+    setResult("Sending....");
+    
+    const formData = new FormData(e.target as HTMLFormElement);
+    formData.append("access_key", "8f919b40-4b8b-4a00-a533-81b01d685c1d");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setResult("Form Submitted Successfully");
+        setSent(true);
+        setForm({ name: "", email: "", message: "" });
+      } else {
+        setResult("Error: " + (data.message || "Something went wrong"));
+      }
+    } catch (err) {
+      setResult("Error: Could not connect to the server");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputStyle: React.CSSProperties = {
@@ -252,6 +278,7 @@ export default function ContactSection() {
                 </label>
                 <input
                   id="name"
+                  name="name"
                   type="text"
                   required
                   placeholder="Your name"
@@ -280,6 +307,7 @@ export default function ContactSection() {
                 </label>
                 <input
                   id="email"
+                  name="email"
                   type="email"
                   required
                   placeholder="your@email.com"
@@ -308,6 +336,7 @@ export default function ContactSection() {
                 </label>
                 <textarea
                   id="message"
+                  name="message"
                   required
                   rows={5}
                   placeholder="Tell me about your project..."
@@ -333,6 +362,7 @@ export default function ContactSection() {
               <button
                 type="submit"
                 className="grad-primary"
+                disabled={loading}
                 style={{
                   padding: "0.9rem",
                   borderRadius: "var(--radius-sm)",
@@ -342,26 +372,43 @@ export default function ContactSection() {
                   textTransform: "uppercase",
                   color: "var(--on-primary)",
                   transition: "filter var(--transition-std), transform var(--transition-std)",
+                  opacity: loading ? 0.7 : 1,
+                  cursor: loading ? "not-allowed" : "pointer",
                 }}
                 onMouseEnter={(e) => {
+                  if (loading) return;
                   const el = e.currentTarget as HTMLElement;
                   el.style.filter = "brightness(1.15)";
                   el.style.transform = "translateY(-1px)";
                 }}
                 onMouseLeave={(e) => {
+                  if (loading) return;
                   const el = e.currentTarget as HTMLElement;
                   el.style.filter = "brightness(1)";
                   el.style.transform = "translateY(0)";
                 }}
               >
-                Send Message →
+                {loading ? "Sending..." : "Send Message →"}
               </button>
+              {result && !sent && (
+                <p style={{ 
+                  textAlign: "center", 
+                  fontSize: "0.8rem", 
+                  color: result.includes("Error") ? "#ff5252" : "var(--primary)",
+                  marginTop: "-0.5rem"
+                }}>
+                  {result}
+                </p>
+              )}
             </form>
           )}
         </div>
       </div>
 
       <style>{`
+        @media (max-width: 1024px) {
+          .contact-grid { gap: 4rem !important; }
+        }
         @media (max-width: 768px) {
           .contact-grid { grid-template-columns: 1fr !important; gap: 3rem !important; }
         }

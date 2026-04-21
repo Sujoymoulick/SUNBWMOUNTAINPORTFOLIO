@@ -10,6 +10,7 @@ import Galaxy from "@/components/ui/galaxy";
 const LINKS = [
   { label: "Home",       href: "#home",     description: "Start here"       },
   { label: "About",      href: "#about",    description: "The Synthesist"   },
+  { label: "Career",     href: "#journey",  description: "My Experience"    },
   { label: "Tech Stack", href: "#tech",     description: "Kinetic Stack"    },
   { label: "Projects",   href: "#projects", description: "Selected Works"   },
   { label: "Contact",    href: "#contact",  description: "Let's Talk"       },
@@ -17,11 +18,12 @@ const LINKS = [
 
 /** Images for each nav item in the InfiniteMenu sphere */
 const MENU_ITEMS = [
-  { image: "/menu_home.png",     link: "#home",     title: "Home",       description: "Start here"     },
-  { image: "/menu_about.png",    link: "#about",    title: "About",      description: "The Synthesist" },
-  { image: "/menu_tech.png",     link: "#tech",     title: "Tech Stack", description: "Kinetic Stack"  },
-  { image: "/menu_projects.png", link: "#projects", title: "Projects",   description: "Selected Works" },
-  { image: "/menu_contact.png",  link: "#contact",  title: "Contact",    description: "Let's Talk"     },
+  { image: "/manu logo/home logo.png", link: "#home", title: "Home", description: "Start here" },
+  { image: "/manu logo/about logo.png", link: "#about", title: "About", description: "The Synthesist" },
+  { image: "/manu logo/career logo.png", link: "#journey", title: "Career", description: "My Experience" },
+  { image: "/manu logo/Tech sack logo.png", link: "#tech", title: "Tech Stack", description: "Kinetic Stack" },
+  { image: "/manu logo/project logo.png", link: "#projects", title: "Projects", description: "Selected Works" },
+  { image: "/manu logo/contact logo.png", link: "#contact", title: "Contact", description: "Let's Talk" },
 ];
 
 export default function NavBar() {

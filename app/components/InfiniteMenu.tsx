@@ -236,7 +236,7 @@ function makeBuffer(gl: WebGL2RenderingContext, sizeOrData: BufferSource | numbe
 }
 
 function resizeCanvasToDisplaySize(canvas: HTMLCanvasElement) {
-  const dpr = Math.min(2, window.devicePixelRatio);
+  const dpr = Math.min(1.5, window.devicePixelRatio);
   const dw = Math.round(canvas.clientWidth  * dpr);
   const dh = Math.round(canvas.clientHeight * dpr);
   if (canvas.width !== dw || canvas.height !== dh) {
@@ -669,6 +669,24 @@ export default function InfiniteMenu({ items = [], scale = 1.0, onLinkClick }: I
 
       {activeItem && (
         <>
+          {/* Central Clickable Overlay */}
+          <div
+            onClick={handleButtonClick}
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "40vh",
+              height: "40vh",
+              borderRadius: "50%",
+              cursor: isMoving ? "grab" : "pointer",
+              zIndex: 5,
+              pointerEvents: isMoving ? "none" : "auto",
+            }}
+            aria-label={`Go to ${activeItem.title}`}
+          />
+
           <h2 className={`face-title ${isMoving ? "inactive" : "active"}`}>
             {activeItem.title}
           </h2>

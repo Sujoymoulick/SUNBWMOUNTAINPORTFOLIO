@@ -9,6 +9,7 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { useIntersectionObserver } from "@/app/hooks/useIntersectionObserver";
 import "./horizon.css";
+import { AnimatedText } from "@/components/ui/animated-shiny-text";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -90,7 +91,7 @@ export const Component = () => {
         alpha: true,
       });
       refs.renderer.setSize(window.innerWidth, window.innerHeight);
-      refs.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      refs.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
       refs.renderer.toneMapping = THREE.ACESFilmicToneMapping;
       refs.renderer.toneMappingExposure = 0.5;
 
@@ -615,22 +616,19 @@ export const Component = () => {
 
       {/* Main Hero Reveal Name */}
       <div className="hero-content" style={{ zIndex: 10, width: "100%", padding: "0 2rem" }}>
-        <h1 
+        <div
           ref={titleRef}
-          className="hero-title"
-          style={{ 
-            opacity: 0, 
-            transform: "translateY(20px)",
-            textAlign: "center",
-            display: "flex",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            gap: "0.2em 0.5em"
-          }}
+          style={{ opacity: 0, transform: "translateY(20px)" }}
         >
-          <span style={{ whiteSpace: "nowrap" }}>{splitTitle("SUJOY")}</span>
-          <span style={{ whiteSpace: "nowrap" }}>{splitTitle("MOULICK")}</span>
-        </h1>
+          <AnimatedText
+            text="SUJOY MOULICK"
+            className="flex justify-center items-center py-4 md:py-8"
+            textClassName="text-[2.8rem] sm:text-[5rem] md:text-[8rem] font-bold leading-tight text-center"
+            hoverEffect={true}
+            gradientAnimationDuration={3}
+            gradientColors="linear-gradient(90deg, #000000, #00dbe9, #000000, #00dbe9, #000000)"
+          />
+        </div>
       </div>
 
       {/* Side menu - strictly hidden on small devices */}
