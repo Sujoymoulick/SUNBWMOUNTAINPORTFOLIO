@@ -151,7 +151,8 @@ export default function NavBar() {
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen(o => !o)}
               style={{
-                width: "44px", height: "44px",
+                minWidth: "44px", height: "44px",
+                padding: "0 1rem",
                 borderRadius: "var(--radius-sm)",
                 display: "flex", flexDirection: "column",
                 alignItems: "center", justifyContent: "center",
@@ -174,12 +175,15 @@ export default function NavBar() {
                   <line x1="13" y1="3" x2="3" y2="13" stroke="var(--primary)" strokeWidth="2" strokeLinecap="round"/>
                 </svg>
               ) : (
-                /* Hamburger menu icon */
-                <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
-                  <rect width="20" height="2" rx="1" fill="white" />
-                  <rect y="6" width="20" height="2" rx="1" fill="white" />
-                  <rect y="12" width="20" height="2" rx="1" fill="white" />
-                </svg>
+                /* Hamburger menu icon + Label */
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span className="label-tech" style={{ fontSize: "0.65rem", letterSpacing: "0.1em", color: "white", opacity: 0.8 }}>MENU</span>
+                  <svg width="18" height="12" viewBox="0 0 20 14" fill="none">
+                    <rect width="20" height="2" rx="1" fill="white" />
+                    <rect y="6" width="20" height="2" rx="1" fill="white" />
+                    <rect y="12" width="20" height="2" rx="1" fill="white" />
+                  </svg>
+                </div>
               )}
             </button>
           </div>
