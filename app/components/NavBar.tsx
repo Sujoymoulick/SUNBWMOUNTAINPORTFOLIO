@@ -88,13 +88,18 @@ export default function NavBar() {
       <header
         style={{
           position: "fixed",
-          top: 0, left: 0, right: 0,
+          top: scrolled ? "1rem" : "0",
+          left: scrolled ? "1rem" : "0",
+          right: scrolled ? "1rem" : "0",
           zIndex: 100,
-          transition: "all var(--transition-std)",
-          borderBottom: scrolled ? "1px solid rgba(59,73,75,0.35)" : "1px solid transparent",
-          background: scrolled ? "rgba(19,19,20,0.82)" : "transparent",
-          backdropFilter: scrolled ? "blur(16px)" : "none",
-          WebkitBackdropFilter: scrolled ? "blur(16px)" : "none",
+          transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+          border: scrolled ? "1px solid rgba(255,255,255,0.1)" : "1px solid transparent",
+          background: scrolled ? "rgba(10,10,12,0.7)" : "transparent",
+          backdropFilter: scrolled ? "blur(12px)" : "none",
+          WebkitBackdropFilter: scrolled ? "blur(12px)" : "none",
+          borderRadius: scrolled ? "1.5rem" : "0",
+          maxWidth: scrolled ? "1100px" : "100%",
+          margin: "0 auto",
         }}
       >
         <nav
